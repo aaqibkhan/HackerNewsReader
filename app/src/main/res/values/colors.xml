@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="textColorPrimary">#FFFFFF</color>
+    <color name="windowBackground">#DBDBDB</color>
+    <color name="navigationBarColor">#000000</color>
+    <color name="textHeading">#000000</color>
+    <color name="textBody">#C0000000</color>
+    <color name="textOther">#C0000000</color>
+    <color name="seperator">#DBDBDB</color>
+    <color name="bg_comment">#FFFFFF</color>
+    <color name="bg_comment_child">#DBDBDB</color>
+</resources>

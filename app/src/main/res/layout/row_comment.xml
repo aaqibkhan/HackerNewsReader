@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/padding_medium">
+
+    <RelativeLayout
+        android:id="@+id/content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/padding_medium">
+
+        <TextView
+            android:id="@+id/tv_body"
+            style="@style/TextBody"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:autoLink="all" />
+
+        <TextView
+            android:id="@+id/tv_time"
+            style="@style/TextOther"
+            android:layout_below="@+id/tv_body"
+            android:layout_marginBottom="@dimen/margin_small" />
+
+        <TextView
+            android:id="@+id/tv_user"
+            style="@style/TextOther"
+            android:layout_below="@+id/tv_time"
+            android:textStyle="bold|italic" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_margin="@dimen/margin_large"
+            android:indeterminate="true"
+            android:visibility="visible" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/content_layout2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/margin_medium"
+        android:layout_marginStart="@dimen/margin_medium"
+        android:background="@color/bg_comment_child"
+        android:padding="@dimen/padding_medium">
+
+        <ImageView
+            android:id="@+id/iv_arrow"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="@dimen/margin_small"
+            android:layout_marginRight="@dimen/margin_small"
+            android:src="@drawable/ic_arrow_drop_up_black_24dp" />
+
+        <TextView
+            android:id="@+id/tv_body2"
+            style="@style/TextBody"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:layout_toEndOf="@+id/iv_arrow"
+            android:layout_toRightOf="@+id/iv_arrow"
+            android:autoLink="all" />
+
+        <TextView
+            android:id="@+id/tv_time2"
+            style="@style/TextOther"
+            android:layout_below="@+id/tv_body2"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:layout_toEndOf="@+id/iv_arrow"
+            android:layout_toRightOf="@+id/iv_arrow" />
+
+        <TextView
+            android:id="@+id/tv_user2"
+            style="@style/TextOther"
+            android:layout_below="@+id/tv_time2"
+            android:layout_toEndOf="@+id/iv_arrow"
+            android:layout_toRightOf="@+id/iv_arrow"
+            android:textStyle="bold|italic" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar2"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_margin="@dimen/margin_large"
+            android:indeterminate="true"
+            android:visibility="visible" />
+
+    </RelativeLayout>
+
+</LinearLayout>

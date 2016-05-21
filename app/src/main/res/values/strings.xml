@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">Task Aaqib</string>
+
+    <string name="comments">Comments</string>
+    <string name="user_text">By %s</string>
+    <string name="comments_text">%d comments</string>
+    <string name="time_just_now">Just now</string>
+
+    <plurals name="time_days">
+        <item quantity="one">1 day ago</item>
+        <item quantity="other">%d days ago</item>
+    </plurals>
+    <plurals name="time_hours">
+        <item quantity="one">1 hour ago</item>
+        <item quantity="other">%d hours ago</item>
+    </plurals>
+    <plurals name="time_minutes">
+        <item quantity="one">1 minute ago</item>
+        <item quantity="other">%d minutes ago</item>
+    </plurals>
+    <plurals name="time_seconds">
+        <item quantity="one">1 second ago</item>
+        <item quantity="other">%d seconds ago</item>
+    </plurals>
+
+    <string name="error_no_url">No URL found to load data from</string>
+    <string name="error_get_stories_failed">Failed to get list of stories</string>
+    <string name="error_comments_list">Comments list not found</string>
+</resources>
