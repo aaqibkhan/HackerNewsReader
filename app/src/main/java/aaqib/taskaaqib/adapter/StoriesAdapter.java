@@ -119,8 +119,8 @@ public class StoriesAdapter extends RecyclerView.Adapter<StoriesAdapter.ViewHold
     /**
      * Assign data to a ViewHolder {@link ViewHolder}
      * This first checks the data availability in the Hashtable {@link #mItems}
-     * I available, then loads the data else
-     * notifies the caller to load data
+     * If available, then loads the data else
+     * shows the progress bar.
      *
      * @param viewHolder The ViewHolder in operation
      * @param i          The position of the view in the list

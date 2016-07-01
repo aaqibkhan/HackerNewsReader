@@ -28,7 +28,7 @@ import aaqib.taskaaqib.util.AppUtil;
  * This displays all the comments for a single story
  * along with one level of nested comment
  */
-public class CommentsActivity extends AppCompatActivity implements CommentsAdapter.CommentListener {
+public class CommentsActivity extends AppCompatActivity {
 
     public static final String PARAM_LIST_IDS = "param_list_ids";
     private static final String PARAM_LIST_ITEMS = "param_list_items";
@@ -72,6 +72,13 @@ public class CommentsActivity extends AppCompatActivity implements CommentsAdapt
         mRecyclerView = (RecyclerView) findViewById(R.id.comments_list);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(), R.drawable.seperator));
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                loadVisibleComments();
+            }
+        });
 
         if (!restoreData(savedInstanceState)) {
             loadData();
@@ -80,6 +87,7 @@ public class CommentsActivity extends AppCompatActivity implements CommentsAdapt
 
     /**
      * Restore content if activity was destroyed previously
+     * Also loads visible comment's data {@link #loadVisibleComments()}
      *
      * @param savedInstanceState The recovered bundle
      * @return true if restoring happened else false
@@ -90,8 +98,14 @@ public class CommentsActivity extends AppCompatActivity implements CommentsAdapt
                 mItemIDs = (ArrayList<Long>) savedInstanceState.getSerializable(PARAM_LIST_IDS);
                 if (savedInstanceState.containsKey(PARAM_LIST_ITEMS)) {
                     Hashtable<Long, Item> items = (Hashtable<Long, Item>) savedInstanceState.getSerializable(PARAM_LIST_ITEMS);
-                    mAdapter = new CommentsAdapter(mItemIDs, items, this);
+                    mAdapter = new CommentsAdapter(mItemIDs, items);
                     mRecyclerView.setAdapter(mAdapter);
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadVisibleComments();
+                        }
+                    }, 1000);
                     return true;
                 }
             }
@@ -114,16 +128,23 @@ public class CommentsActivity extends AppCompatActivity implements CommentsAdapt
 
     /**
      * Initiate a new Adapter
-     * or update the Adapter and notify data set changed
+     * or update the Adapter and notify data set changed.
+     * Also loads visible comment's data {@link #loadVisibleComments()}
      */
     private void setAdapter() {
         if (mAdapter == null) {
-            mAdapter = new CommentsAdapter(mItemIDs, this);
+            mAdapter = new CommentsAdapter(mItemIDs);
             mRecyclerView.setAdapter(mAdapter);
         } else {
             mAdapter.setItemIDs(mItemIDs);
             mAdapter.notifyDataSetChanged();
         }
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loadVisibleComments();
+            }
+        }, 1000);
     }
 
     /**
@@ -132,7 +153,6 @@ public class CommentsActivity extends AppCompatActivity implements CommentsAdapt
      *
      * @param commentID The item ID of the comment
      */
-    @Override
     public void loadCommentData(long commentID) {
         if (!mItemsNetworkCalled.contains(commentID)) {
             mItemsNetworkCalled.add(commentID);
@@ -141,6 +161,44 @@ public class CommentsActivity extends AppCompatActivity implements CommentsAdapt
                     null,
                     commentCallListener
             );
+        }
+    }
+
+    /**
+     * This loads all comments that are visible on the screen
+     * including one level of nested comment, if any,
+     * when the state of the recycler view is SCROLL_STATE_IDLE.
+     * This helps to avoid unnecessary network calls when scrolling
+     * through many items in a list which might have 100s of items
+     */
+    private void loadVisibleComments() {
+        if (mRecyclerView != null && mRecyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
+            LinearLayoutManager manager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
+            if (manager != null && mAdapter != null) {
+                int min = manager.findFirstVisibleItemPosition();
+                int max = manager.findLastVisibleItemPosition();
+                Hashtable<Long, Item> itemsTable = mAdapter.getItems();
+                long id;
+                if (mItemIDs.size() > 0) {
+                    for (int i = min; i <= max; i++) {
+                        try {
+                            id = mItemIDs.get(i);
+                            Item item = itemsTable.get(id);
+                            if (item == null) {
+                                loadCommentData(id);
+                            } else if (item.getKids() != null && item.getKids().size() > 0) {
+                                id = item.getKids().get(0);
+                                Item childItem = itemsTable.get(id);
+                                if (childItem == null) {
+                                    loadCommentData(id);
+                                }
+                            }
+                        } catch (IndexOutOfBoundsException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
         }
     }
 

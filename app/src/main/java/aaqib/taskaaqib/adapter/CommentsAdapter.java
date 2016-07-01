@@ -21,17 +21,8 @@ import aaqib.taskaaqib.util.AppUtil;
  */
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHolder> {
 
-    /**
-     * Callback used to notify to load comment data from network
-     */
-    public interface CommentListener {
-        void loadCommentData(long commentID);
-    }
-
-
     private ArrayList<Long> mItemIDs;
     private Hashtable<Long, Item> mItems;
-    private CommentListener mListener;
 
     /**
      * Default Constructor
@@ -44,26 +35,22 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
     /**
      * Constructor with list of items IDs and listener
      *
-     * @param itemIDs  List of item IDs of the comments
-     * @param listener Callback interface to report load of comment
+     * @param itemIDs List of item IDs of the comments
      */
-    public CommentsAdapter(ArrayList<Long> itemIDs, CommentListener listener) {
+    public CommentsAdapter(ArrayList<Long> itemIDs) {
         mItemIDs = new ArrayList<>(itemIDs);
-        mListener = listener;
         mItems = new Hashtable<>();
     }
 
     /**
      * Constructor with list of item IDs, items and listener
      *
-     * @param itemIDs  List of item IDs of the comments
-     * @param items    Hashtable of items mapped with their IDs
-     * @param listener Callback interface to report load of comment
+     * @param itemIDs List of item IDs of the comments
+     * @param items   Hashtable of items mapped with their IDs
      */
-    public CommentsAdapter(ArrayList<Long> itemIDs, Hashtable<Long, Item> items, CommentListener listener) {
+    public CommentsAdapter(ArrayList<Long> itemIDs, Hashtable<Long, Item> items) {
         mItemIDs = new ArrayList<>(itemIDs);
         mItems = items;
-        mListener = listener;
     }
 
     /**
@@ -125,9 +112,9 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
     /**
      * Assign data to a ViewHolder {@link ViewHolder}
      * This first checks the data availability in the Hashtable {@link #mItems}
-     * I available, then loads the data else
-     * notifies the caller to load data
-     * Same is repeated for the nested comment
+     * If available, then loads the data else
+     * shows the progress bar.
+     * Same is repeated for the nested comment.
      *
      * @param viewHolder The ViewHolder in operation
      * @param i          The position of the view in the list
@@ -138,9 +125,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         Item item = mItems.get(itemID);
 
         if (item == null) {
-            if (mListener != null) {
-                mListener.loadCommentData(itemID);
-            }
             toggleProgressBar1(viewHolder, true);
             viewHolder.mContentView2.setVisibility(View.GONE);
         } else {
@@ -164,9 +148,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
                 long itemID2 = item.getKids().get(0);
                 Item item2 = mItems.get(itemID2);
                 if (item2 == null) {
-                    if (mListener != null) {
-                        mListener.loadCommentData(itemID2);
-                    }
                     toggleProgressBar2(viewHolder, true);
                 } else {
                     if (item2.isDeleted() || item2.isDead()) {
