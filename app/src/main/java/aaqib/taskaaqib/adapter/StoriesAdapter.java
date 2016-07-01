@@ -29,8 +29,6 @@ public class StoriesAdapter extends RecyclerView.Adapter<StoriesAdapter.ViewHold
         void onStoryClicked(String URL);
 
         void onCommentsClicked(List<Long> commentIDs);
-
-        void loadStoryData(long storyID);
     }
 
 
@@ -132,9 +130,6 @@ public class StoriesAdapter extends RecyclerView.Adapter<StoriesAdapter.ViewHold
         long itemID = mItemIDs.get(i);
         Item item = mItems.get(itemID);
         if (item == null) {
-            if (mListener != null) {
-                mListener.loadStoryData(itemID);
-            }
             viewHolder.mContentView.setVisibility(View.GONE);
             viewHolder.mProgressBar.setVisibility(View.VISIBLE);
             viewHolder.mContentView.setTag(null);

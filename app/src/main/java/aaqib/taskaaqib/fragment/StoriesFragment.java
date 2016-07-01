@@ -151,6 +151,13 @@ public class StoriesFragment extends Fragment implements StoriesAdapter.StoryLis
         } else {
             mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         }
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                loadVisibleStories();
+            }
+        });
 
         if (!restoreData(savedInstanceState)) {
             loadData();
@@ -232,6 +239,7 @@ public class StoriesFragment extends Fragment implements StoriesAdapter.StoryLis
     /**
      * Initiate a new Adapter
      * or update the Adapter and notify data set changed
+     * Also loads visible story's data {@link #loadVisibleStories()}
      */
     private void setAdapter() {
         if (mAdapter == null) {
@@ -241,6 +249,12 @@ public class StoriesFragment extends Fragment implements StoriesAdapter.StoryLis
             mAdapter.setItemIDs(mItemIDs);
             mAdapter.notifyDataSetChanged();
         }
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loadVisibleStories();
+            }
+        }, 1000);
     }
 
     /**
@@ -278,7 +292,6 @@ public class StoriesFragment extends Fragment implements StoriesAdapter.StoryLis
      *
      * @param storyID The item ID of the story
      */
-    @Override
     public void loadStoryData(long storyID) {
         if (!mItemsNetworkCalled.contains(storyID)) {
             mItemsNetworkCalled.add(storyID);
@@ -287,6 +300,64 @@ public class StoriesFragment extends Fragment implements StoriesAdapter.StoryLis
                     null,
                     storyCallListener
             );
+        }
+    }
+
+    /**
+     * This method is called whenever the fragment is visible on screen
+     * We load stories that are visible if the recycler view is in IDLE state
+     * {@link #loadVisibleStories()}
+     *
+     * @param isVisibleToUser true if this fragment's UI is currently visible to the user (default),
+     *                        false if it is not.
+     */
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        loadVisibleStories();
+    }
+
+    /**
+     * This loads all stories that are visible on the screen
+     * and the state of the recycler view is SCROLL_STATE_IDLE
+     * This helps to avoid unnecessary network calls when scrolling
+     * through many items in a list which might have 100s of items
+     */
+    private void loadVisibleStories() {
+        if (this.getUserVisibleHint() && mRecyclerView != null) {
+            if (mRecyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
+                StaggeredGridLayoutManager manager = (StaggeredGridLayoutManager) mRecyclerView.getLayoutManager();
+                if (manager != null && mAdapter != null) {
+                    int min = Integer.MAX_VALUE;
+                    int max = Integer.MIN_VALUE;
+                    int[] result = manager.findFirstVisibleItemPositions(null);
+                    for (int num : result) {
+                        if (num < min) {
+                            min = num;
+                        }
+                    }
+                    result = manager.findLastVisibleItemPositions(null);
+                    for (int num : result) {
+                        if (num > max) {
+                            max = num;
+                        }
+                    }
+                    Hashtable<Long, Item> itemsTable = mAdapter.getItems();
+                    long id;
+                    if (mItemIDs.size() > 0) {
+                        for (int i = min; i <= max; i++) {
+                            try {
+                                id = mItemIDs.get(i);
+                                if (itemsTable.get(id) == null) {
+                                    loadStoryData(id);
+                                }
+                            } catch (IndexOutOfBoundsException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
