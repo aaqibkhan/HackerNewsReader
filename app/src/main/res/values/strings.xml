@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Task Aaqib</string>
+    <string name="app_name">HackerNews Reader</string>
 
     <string name="comments">Comments</string>
     <string name="user_text">By %s</string>
